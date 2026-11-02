@@ -1,0 +1,1065 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>Anvar Bakery — WebApp</title>
+  <script src="https://telegram.org/js/telegram-web-app.js"></script>
+  <style>
+    :root {
+      --primary: #d97706;
+      --primary-dark: #b45309;
+      --bg: #f8fafc;
+      --surface: #ffffff;
+      --text: #0f172a;
+      --muted: #64748b;
+      --border: #e2e8f0;
+      --success: #16a34a;
+      --danger: #dc2626;
+      --night: #312e81;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    body {
+      background-color: var(--bg);
+      color: var(--text);
+      line-height: 1.4;
+      padding-bottom: 95px;
+    }
+
+    .role-bar {
+      background: #0f172a;
+      color: #fff;
+      padding: 8px 10px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 0.75rem;
+    }
+
+    .role-btn-group {
+      display: flex;
+      gap: 4px;
+    }
+
+    .role-btn {
+      background: #1e293b;
+      color: #e2e8f0;
+      border: 1px solid #334155;
+      padding: 4px 8px;
+      border-radius: 6px;
+      font-size: 0.7rem;
+      cursor: pointer;
+    }
+
+    .role-btn.active {
+      background: var(--primary);
+      border-color: var(--primary);
+      color: white;
+      font-weight: 700;
+    }
+
+    header {
+      background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+      color: #fff;
+      padding: 14px 18px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.08);
+    }
+
+    header h1 {
+      font-size: 1.2rem;
+      font-weight: 700;
+    }
+
+    .badge {
+      background: rgba(255,255,255,0.25);
+      padding: 4px 10px;
+      border-radius: 20px;
+      font-size: 0.75rem;
+      font-weight: 600;
+    }
+
+    .container {
+      max-width: 600px;
+      margin: 0 auto;
+      padding: 12px;
+    }
+
+    .nav-tabs {
+      display: flex;
+      background: #e2e8f0;
+      border-radius: 10px;
+      padding: 3px;
+      margin-bottom: 14px;
+    }
+
+    .nav-tab {
+      flex: 1;
+      text-align: center;
+      padding: 8px 0;
+      font-size: 0.82rem;
+      font-weight: 600;
+      color: var(--muted);
+      cursor: pointer;
+      border-radius: 8px;
+      transition: all 0.2s;
+    }
+
+    .nav-tab.active {
+      background: var(--surface);
+      color: var(--text);
+      box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+    }
+
+    .category-pills {
+      display: flex;
+      gap: 6px;
+      overflow-x: auto;
+      padding-bottom: 8px;
+      margin-bottom: 10px;
+      scrollbar-width: none;
+    }
+    .category-pills::-webkit-scrollbar { display: none; }
+
+    .cat-pill {
+      background: white;
+      border: 1px solid var(--border);
+      padding: 6px 12px;
+      border-radius: 16px;
+      font-size: 0.78rem;
+      font-weight: 600;
+      white-space: nowrap;
+      cursor: pointer;
+    }
+    .cat-pill.active {
+      background: var(--primary);
+      color: white;
+      border-color: var(--primary);
+    }
+
+    .card {
+      background: var(--surface);
+      border-radius: 14px;
+      border: 1px solid var(--border);
+      padding: 12px;
+      margin-bottom: 10px;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.02);
+    }
+
+    .product-card {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .product-img {
+      width: 54px;
+      height: 54px;
+      border-radius: 10px;
+      background: #fed7aa;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.6rem;
+      flex-shrink: 0;
+    }
+
+    .product-info { flex: 1; }
+    .product-info h3 { font-size: 0.92rem; margin-bottom: 2px; }
+    .product-meta { font-size: 0.72rem; color: var(--muted); margin-bottom: 3px; }
+    .product-price { font-size: 0.92rem; font-weight: 700; color: var(--primary-dark); }
+
+    .counter {
+      display: flex;
+      align-items: center;
+      gap: 5px;
+    }
+
+    .btn-counter {
+      width: 30px;
+      height: 30px;
+      border-radius: 8px;
+      border: none;
+      background: #f1f5f9;
+      color: var(--text);
+      font-size: 1.1rem;
+      font-weight: bold;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .btn-counter.add { background: var(--primary); color: white; }
+    .count-display { font-weight: 700; min-width: 16px; text-align: center; font-size: 0.9rem; }
+
+    .quick-add-group {
+      display: flex;
+      gap: 4px;
+      margin-top: 6px;
+    }
+
+    .btn-quick {
+      background: #f8fafc;
+      border: 1px solid var(--border);
+      padding: 2px 7px;
+      border-radius: 6px;
+      font-size: 0.68rem;
+      font-weight: 600;
+      cursor: pointer;
+      color: var(--muted);
+    }
+
+    .order-status-tag {
+      font-size: 0.72rem;
+      font-weight: 700;
+      padding: 3px 8px;
+      border-radius: 6px;
+    }
+
+    .status-yuborildi { background: #dbeafe; color: #1e40af; }
+    .status-yigilmoqda { background: #fef3c7; color: #92400e; }
+    .status-yolda { background: #e0e7ff; color: #3730a3; }
+    .status-topshirildi { background: #dcfce7; color: #166534; }
+    .status-bekor { background: #fee2e2; color: #991b1b; }
+    .status-tolov { background: #fce7f3; color: #9d174d; }
+
+    .order-actions {
+      display: flex;
+      gap: 6px;
+      margin-top: 10px;
+    }
+
+    .btn-action {
+      flex: 1;
+      padding: 9px;
+      border-radius: 8px;
+      border: none;
+      font-weight: 600;
+      font-size: 0.8rem;
+      cursor: pointer;
+      text-align: center;
+      text-decoration: none;
+      display: inline-block;
+    }
+
+    .btn-step { background: var(--primary); color: white; }
+    .btn-cancel { background: #fee2e2; color: var(--danger); }
+    .btn-nav-yandex { background: #fc3f1d; color: white; }
+    .btn-nav-google { background: #4285f4; color: white; }
+
+    .metrics-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 8px;
+      margin-bottom: 10px;
+    }
+
+    .metric-box {
+      background: white;
+      padding: 10px;
+      border-radius: 12px;
+      border: 1px solid var(--border);
+      text-align: center;
+    }
+
+    .metric-value {
+      font-size: 1.1rem;
+      font-weight: 800;
+      color: var(--primary-dark);
+      margin-top: 2px;
+    }
+
+    .metric-title {
+      font-size: 0.68rem;
+      text-transform: uppercase;
+      font-weight: 600;
+      color: var(--muted);
+    }
+
+    .input-group { margin-bottom: 10px; }
+    .input-group label {
+      display: block;
+      font-size: 0.78rem;
+      font-weight: 600;
+      color: var(--muted);
+      margin-bottom: 3px;
+    }
+    .input-group input, .input-group select, .input-group textarea {
+      width: 100%;
+      padding: 9px 12px;
+      border-radius: 8px;
+      border: 1px solid var(--border);
+      font-size: 0.9rem;
+    }
+
+    .modal {
+      position: fixed;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background: rgba(0,0,0,0.5);
+      z-index: 100;
+      display: flex;
+      align-items: flex-end;
+    }
+
+    .modal-content {
+      background: white;
+      width: 100%;
+      border-radius: 18px 18px 0 0;
+      padding: 18px;
+      max-height: 85vh;
+      overflow-y: auto;
+    }
+
+    .cart-bar {
+      position: fixed;
+      bottom: 0; left: 0; right: 0;
+      background: white;
+      border-top: 1px solid var(--border);
+      padding: 12px 18px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      box-shadow: 0 -4px 12px rgba(0,0,0,0.05);
+      z-index: 40;
+    }
+
+    .cart-total-lbl { font-size: 0.75rem; color: var(--muted); }
+    .cart-total-val { font-size: 1.1rem; font-weight: 800; color: var(--text); }
+
+    .btn-submit {
+      background: var(--primary);
+      color: white;
+      border: none;
+      padding: 12px 20px;
+      border-radius: 10px;
+      font-weight: 700;
+      font-size: 0.92rem;
+      cursor: pointer;
+    }
+
+    .btn-submit:disabled { opacity: 0.5; cursor: not-allowed; }
+    .hidden { display: none !important; }
+  </style>
+</head>
+<body>
+
+  <!-- Rejim almashtirgich (Brauzerda sinov uchun) -->
+  <div class="role-bar">
+    <span><b>Rejim:</b></span>
+    <div class="role-btn-group">
+      <button class="role-btn active" id="btn-role-client" onclick="switchRole('client')">👤 Xaridor</button>
+      <button class="role-btn" id="btn-role-courier" onclick="switchRole('courier')">🛵 Kuryer</button>
+      <button class="role-btn" id="btn-role-admin" onclick="switchRole('admin')">👑 Dilshodbek</button>
+    </div>
+  </div>
+
+  <header>
+    <h1>🥖 Anvar Bakery</h1>
+    <span class="badge" id="role-badge">Xaridor</span>
+  </header>
+
+  <div class="container">
+    
+    <!-- 1. XARIDOR BO'LIMI -->
+    <div id="client-view">
+      <div class="nav-tabs">
+        <div class="nav-tab active" onclick="switchClientTab('catalog')">Katalog</div>
+        <div class="nav-tab" onclick="switchClientTab('history')">Buyurtmalarim</div>
+        <div class="nav-tab" onclick="switchClientTab('branches')">Filiallar (9 ta)</div>
+      </div>
+
+      <div class="category-pills" id="cat-pills">
+        <div class="cat-pill active" onclick="filterCategory('all')">Barchasi</div>
+        <div class="cat-pill" onclick="filterCategory('hotdog')">🌭 Hot-dog</div>
+        <div class="cat-pill" onclick="filterCategory('burger')">🍔 Gamburger</div>
+        <div class="cat-pill" onclick="filterCategory('bread')">🥖 Baton va Qolipli</div>
+      </div>
+
+      <div id="tab-catalog">
+        <div id="product-list"></div>
+      </div>
+
+      <div id="tab-history" class="hidden">
+        <div id="client-history-list"></div>
+      </div>
+
+      <!-- BARCHA 9 TA FILIAL BLOKLARI -->
+      <div id="tab-branches" class="hidden">
+        <div class="card">
+          <b>📍 Toshkent sh., Labzak</b>
+          <p style="font-size:0.8rem; color:var(--muted); margin:4px 0;">📞 +998 90 120 00 28</p>
+          <a href="https://maps.google.com/?q=41.330466,69.261072" target="_blank" class="btn-action btn-step" style="font-size:0.75rem; padding:6px 12px; margin-top:4px;">🗺 Xaritada ko'rish</a>
+        </div>
+        <div class="card">
+          <b>📍 Toshkent sh., Olmazor</b>
+          <p style="font-size:0.8rem; color:var(--muted); margin:4px 0;">📞 +998 91 120 00 28</p>
+          <a href="https://maps.google.com/?q=41.375364,69.200670" target="_blank" class="btn-action btn-step" style="font-size:0.75rem; padding:6px 12px; margin-top:4px;">🗺 Xaritada ko'rish</a>
+        </div>
+        <div class="card">
+          <b>📍 Toshkent sh., Sergeli</b>
+          <p style="font-size:0.8rem; color:var(--muted); margin:4px 0;">📞 +998 77 120 00 28</p>
+          <a href="https://maps.google.com/?q=41.238235,69.258220" target="_blank" class="btn-action btn-step" style="font-size:0.75rem; padding:6px 12px; margin-top:4px;">🗺 Xaritada ko'rish</a>
+        </div>
+        <div class="card">
+          <b>📍 Qashqadaryo viloyati</b>
+          <p style="font-size:0.8rem; color:var(--muted); margin:4px 0;">📞 +998 90 721 00 28</p>
+          <a href="https://maps.google.com/?q=39.115913,66.869208" target="_blank" class="btn-action btn-step" style="font-size:0.75rem; padding:6px 12px; margin-top:4px;">🗺 Xaritada ko'rish</a>
+        </div>
+        <div class="card">
+          <b>📍 Surxondaryo viloyati</b>
+          <p style="font-size:0.8rem; color:var(--muted); margin:4px 0;">📞 +998 91 090 00 28</p>
+          <a href="https://maps.google.com/?q=37.979000,67.782548" target="_blank" class="btn-action btn-step" style="font-size:0.75rem; padding:6px 12px; margin-top:4px;">🗺 Xaritada ko'rish</a>
+        </div>
+        <div class="card">
+          <b>📍 Chirchiq shahri</b>
+          <p style="font-size:0.8rem; color:var(--muted); margin:4px 0;">📞 +998 94 473 00 28</p>
+          <a href="tel:+998944730028" class="btn-action btn-step" style="font-size:0.75rem; padding:6px 12px; margin-top:4px;">📞 Qo'ng'iroq qilish</a>
+        </div>
+        <div class="card">
+          <b>📍 Andijon viloyati</b>
+          <p style="font-size:0.8rem; color:var(--muted); margin:4px 0;">📞 +998 90 066 00 28</p>
+          <a href="tel:+998900660028" class="btn-action btn-step" style="font-size:0.75rem; padding:6px 12px; margin-top:4px;">📞 Qo'ng'iroq qilish</a>
+        </div>
+        <div class="card">
+          <b>📍 Jizzax viloyati</b>
+          <p style="font-size:0.8rem; color:var(--muted); margin:4px 0;">📞 +998 91 010 00 28</p>
+          <a href="tel:+998910100028" class="btn-action btn-step" style="font-size:0.75rem; padding:6px 12px; margin-top:4px;">📞 Qo'ng'iroq qilish</a>
+        </div>
+        <div class="card">
+          <b>📍 Samarqand viloyati</b>
+          <p style="font-size:0.8rem; color:var(--muted); margin:4px 0;">📞 +998 91 318 00 28</p>
+          <a href="tel:+998913180028" class="btn-action btn-step" style="font-size:0.75rem; padding:6px 12px; margin-top:4px;">📞 Qo'ng'iroq qilish</a>
+        </div>
+      </div>
+    </div>
+
+    <!-- 2. KURYERLAR BO'LIMI -->
+    <div id="courier-view" class="hidden">
+      <div class="card" style="background:#eff6ff; border-color:#bfdbfe; margin-bottom:12px;">
+        <div style="font-weight:700; font-size:0.85rem; color:#1e40af;" id="courier-shift-info">🛵 Joriy smena aniqlanmoqda...</div>
+        <div style="font-size:0.75rem; color:#3b82f6;">Smenangizdagi buyurtmalar avtomatik bu yerga tushadi.</div>
+      </div>
+
+      <div class="nav-tabs">
+        <div class="nav-tab active" onclick="switchCourierTab('active')">Faol buyurtmalar</div>
+        <div class="nav-tab" onclick="switchCourierTab('done')">Topshirilganlar</div>
+      </div>
+
+      <div id="courier-orders-container"></div>
+    </div>
+
+    <!-- 3. DILSHODBEK ADMIN BO'LIMI -->
+    <div id="admin-view" class="hidden">
+      <div class="metrics-grid">
+        <div class="metric-box">
+          <div class="metric-title">Bugungi Tushum</div>
+          <div class="metric-value" id="daily-rev">0 so'm</div>
+        </div>
+        <div class="metric-box">
+          <div class="metric-title">Oylik Tushum</div>
+          <div class="metric-value" id="monthly-rev">0 so'm</div>
+        </div>
+      </div>
+
+      <div class="card" style="padding: 10px 14px;">
+        <div style="font-size:0.72rem; text-transform:uppercase; font-weight:700; color:var(--muted); margin-bottom:6px;">🥖 Nonlar bo'yicha sotuv:</div>
+        <div id="bread-stats-container" style="font-size:0.82rem; line-height:1.6;"></div>
+      </div>
+
+      <div style="display:grid; grid-template-columns:1fr 1fr; gap:6px; margin-bottom:10px;">
+        <button class="btn-action" style="background:#f1f5f9; color:var(--text); border:1px solid var(--border);" onclick="exportToExcel()">📥 Excel hisobot</button>
+        <button class="btn-action" style="background:#f1f5f9; color:var(--text); border:1px solid var(--border);" onclick="openBroadcastModal()">📢 Tezkor xabar</button>
+      </div>
+
+      <div class="card" style="padding:8px 12px; margin-bottom:10px;">
+        <input type="number" id="search-input" placeholder="🔍 Buyurtma raqamidan qidirish (#1, #2...)" oninput="searchOrders()" style="width:100%; border:none; outline:none; font-size:0.85rem;">
+      </div>
+
+      <div class="nav-tabs">
+        <div class="nav-tab active" onclick="switchAdminTab('active')">Faol</div>
+        <div class="nav-tab" onclick="switchAdminTab('pending')">⏳ To'lov kutilmoqda</div>
+        <div class="nav-tab" onclick="switchAdminTab('history')">📜 Tarix</div>
+      </div>
+
+      <div id="admin-orders-container"></div>
+    </div>
+
+  </div>
+
+  <!-- Buyurtmani rasmiylashtirish modali -->
+  <div class="modal hidden" id="checkout-modal">
+    <div class="modal-content">
+      <h3 style="margin-bottom: 12px; font-size:1.1rem;">Buyurtmani rasmiylashtirish</h3>
+      <div class="input-group">
+        <label>Ism va Familiyangiz</label>
+        <input type="text" id="order-name" placeholder="Masalan: Sardor Rahimov">
+      </div>
+      <div class="input-group">
+        <label>Telefon raqamingiz</label>
+        <input type="tel" id="order-phone" placeholder="+998 90 123 45 67">
+      </div>
+      <div class="input-group">
+        <label>Yetkazib berish vaqti</label>
+        <select id="order-time">
+          <option value="🚀 Tezkor (2 soat ichida)">🚀 Tezkor (2 soat ichida)</option>
+          <option value="🌅 Ertalab (07:00 - 09:00)">🌅 Ertalab (07:00 - 09:00)</option>
+          <option value="☀️ Abetda (12:00 - 14:00)">☀️ Abetda (12:00 - 14:00)</option>
+          <option value="🌆 Kech payt (18:00 - 20:00)">🌆 Kech payt (18:00 - 20:00)</option>
+          <option value="🌙 Tungi vaqt (22:00 - 02:00)">🌙 Tungi vaqt (22:00 - 02:00)</option>
+        </select>
+      </div>
+      <div class="input-group">
+        <label>To'lov usuli</label>
+        <select id="order-payment">
+          <option value="💵 Naqd pul">💵 Naqd pul (Yetkazilganda)</option>
+          <option value="📲 Paynet">📲 Paynet (Onlayn hisobga)</option>
+        </select>
+      </div>
+      <div class="input-group">
+        <label>Yetkazish manzili (GPS)</label>
+        <button class="btn-action" style="background:#f1f5f9; color:var(--text); border:1px solid var(--border);" onclick="getLocation()">📍 GPS Lokatsiyani olish</button>
+        <div id="loc-status" style="font-size:0.72rem; color:var(--muted); margin-top:4px;">Lokatsiya belgilanmagan</div>
+      </div>
+      <div style="display:flex; gap:8px; margin-top:14px;">
+        <button class="btn-action btn-cancel" onclick="closeCheckout()">Bekor qilish</button>
+        <button class="btn-action btn-step" onclick="confirmOrder()">Yuborish</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Xabar tarqatish modali -->
+  <div class="modal hidden" id="broadcast-modal">
+    <div class="modal-content">
+      <h3 style="margin-bottom: 10px; font-size:1.05rem;">📢 Barcha mijozlarga xabar yuborish</h3>
+      <div class="input-group">
+        <label>Xabar matni</label>
+        <textarea id="broadcast-text" rows="4" placeholder="Masalan: Ertaga ertalab yangi pishgan issiq nonlar yetkaziladi..."></textarea>
+      </div>
+      <div style="display:flex; gap:8px; margin-top:10px;">
+        <button class="btn-action btn-cancel" onclick="closeBroadcastModal()">Yopish</button>
+        <button class="btn-action btn-step" onclick="sendBroadcast()">Yuborish</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Pastki savat satri -->
+  <div class="cart-bar" id="cart-bar">
+    <div>
+      <div class="cart-total-lbl">Jami hisob:</div>
+      <div class="cart-total-val" id="cart-total-val">0 so'm</div>
+    </div>
+    <button class="btn-submit" id="btn-submit-order" onclick="openCheckout()" disabled>Buyurtma berish</button>
+  </div>
+
+  <script>
+    const DILSHOD_ID = 1264738478;
+    const COURIER_DAY_ID = 8319522689;
+    const COURIER_NIGHT_ID = 7114374623;
+    const PAYNET_QR_URL = "https://app.paynet.uz/qr-online/00020101021140440012qr-online.uz01186qzBwoZz5POIgdfCdv0202115204531153038605802UZ5910AO'PAYNET'6008Tashkent610610002164280002uz0106PAYNET0208Toshkent80520012qr-online.uz03097120207070419marketing@paynet.uz63042E3C";
+
+    const tg = window.Telegram?.WebApp;
+    if (tg) tg.expand();
+
+    const PRODUCTS = [
+      { id: 1, category: "hotdog", icon: "🌭", name: "Hot-dog (kichkina)", pack: "15 dona", price: 25000, perPiece: 1666 },
+      { id: 2, category: "hotdog", icon: "🌭", name: "Hot-dog (o'rtacha)", pack: "14 dona", price: 28000, perPiece: 2000 },
+      { id: 3, category: "hotdog", icon: "🌭", name: "Hot-dog (katta)", pack: "10 dona", price: 25000, perPiece: 2500 },
+      { id: 4, category: "burger", icon: "🍔", name: "Gamburger (kichik)", pack: "12 dona", price: 25000, perPiece: 2083 },
+      { id: 5, category: "burger", icon: "🍔", name: "Gamburger (katta)", pack: "12 dona", price: 25000, perPiece: 2083 },
+      { id: 6, category: "bread", icon: "🥖", name: "Baton bochka", pack: "10 dona", price: 28000, perPiece: 2800 },
+      { id: 7, category: "bread", icon: "🍞", name: "Qolibli non", pack: "14 dona", price: 28000, perPiece: 2000 }
+    ];
+
+    let currentCategory = 'all';
+    let cart = {};
+    let clientLocation = { lat: 41.311081, lon: 69.240562 };
+
+    function getCurrentShift() {
+      const h = new Date().getHours();
+      return (h >= 8 && h < 20) ? 1 : 2;
+    }
+
+    let orders = [
+      {
+        id: 1,
+        client: "Sherzod (Fastfud)",
+        phone: "+998 90 123 45 67",
+        items: [{ name: "Hot-dog (katta)", qty: 4, price: 25000 }],
+        total: 100000,
+        time: "🚀 Tezkor (2 soat ichida)",
+        payment: "💵 Naqd pul",
+        status: "Yuborildi",
+        shift: 1,
+        lat: 41.3200,
+        lon: 69.2500,
+        date: "Bugun, 10:30"
+      },
+      {
+        id: 2,
+        client: "Tungi Kafebar",
+        phone: "+998 97 765 43 21",
+        items: [{ name: "Gamburger (katta)", qty: 3, price: 25000 }],
+        total: 75000,
+        time: "🌙 Tungi vaqt (22:00 - 02:00)",
+        payment: "📲 Paynet",
+        status: "To'lov kutilmoqda",
+        shift: 2,
+        lat: 41.3400,
+        lon: 69.2800,
+        date: "Bugun, 22:15"
+      }
+    ];
+
+    window.addEventListener("DOMContentLoaded", () => {
+      const tgUser = tg?.initDataUnsafe?.user;
+      if (tgUser) {
+        if (tgUser.id === DILSHOD_ID) {
+          switchRole('admin');
+        } else if (tgUser.id === COURIER_DAY_ID || tgUser.id === COURIER_NIGHT_ID) {
+          switchRole('courier');
+        } else {
+          switchRole('client');
+        }
+      } else {
+        switchRole('client');
+      }
+    });
+
+    function switchRole(role) {
+      document.getElementById('btn-role-client').classList.toggle('active', role === 'client');
+      document.getElementById('btn-role-courier').classList.toggle('active', role === 'courier');
+      document.getElementById('btn-role-admin').classList.toggle('active', role === 'admin');
+
+      document.getElementById("client-view").classList.toggle("hidden", role !== 'client');
+      document.getElementById("courier-view").classList.toggle("hidden", role !== 'courier');
+      document.getElementById("admin-view").classList.toggle("hidden", role !== 'admin');
+      document.getElementById("cart-bar").classList.toggle("hidden", role !== 'client');
+
+      if (role === 'admin') {
+        document.getElementById("role-badge").innerText = "Dilshodbek (Admin)";
+        document.getElementById("role-badge").style.background = "#15803d";
+        renderAdminView('active');
+        calculateMetrics();
+      } else if (role === 'courier') {
+        const shift = getCurrentShift();
+        const shiftTxt = shift === 1 ? "Kunduzgi smena (08:00 - 20:00)" : "Tungi smena (20:00 - 08:00)";
+        document.getElementById("role-badge").innerText = shift === 1 ? "1-Kuryer (Kunduz)" : "2-Kuryer (Tun)";
+        document.getElementById("role-badge").style.background = shift === 1 ? "#2563eb" : "var(--night)";
+        document.getElementById("courier-shift-info").innerText = `🛵 Joriy navbatchilik: ${shiftTxt}`;
+        renderCourierOrders('active');
+      } else {
+        document.getElementById("role-badge").innerText = "Xaridor";
+        document.getElementById("role-badge").style.background = "rgba(255,255,255,0.25)";
+        renderProducts();
+        renderClientHistory();
+      }
+    }
+
+    function filterCategory(cat) {
+      currentCategory = cat;
+      document.querySelectorAll('.cat-pill').forEach(el => el.classList.remove('active'));
+      event.target.classList.add('active');
+      renderProducts();
+    }
+
+    function renderProducts() {
+      const list = document.getElementById("product-list");
+      list.innerHTML = "";
+      
+      const filtered = currentCategory === 'all' 
+        ? PRODUCTS 
+        : PRODUCTS.filter(p => p.category === currentCategory);
+
+      filtered.forEach(p => {
+        const qty = cart[p.id] || 0;
+        list.innerHTML += `
+          <div class="card product-card">
+            <div class="product-img">${p.icon}</div>
+            <div class="product-info">
+              <h3>${p.name}</h3>
+              <div class="product-meta">📦 Paketda: ${p.pack} (1 donasi ~${p.perPiece} so'm)</div>
+              <div class="product-price">${p.price.toLocaleString()} so'm</div>
+              <div class="quick-add-group">
+                <button class="btn-quick" onclick="addDirect(${p.id}, 1)">+1</button>
+                <button class="btn-quick" onclick="addDirect(${p.id}, 5)">+5</button>
+                <button class="btn-quick" onclick="addDirect(${p.id}, 10)">+10</button>
+              </div>
+            </div>
+            <div class="counter">
+              ${qty > 0 ? `<button class="btn-counter" onclick="changeQty(${p.id}, -1)">−</button>` : ''}
+              ${qty > 0 ? `<span class="count-display">${qty}</span>` : ''}
+              <button class="btn-counter add" onclick="changeQty(${p.id}, 1)">+</button>
+            </div>
+          </div>
+        `;
+      });
+      updateCartBar();
+    }
+
+    function changeQty(id, delta) {
+      const current = cart[id] || 0;
+      const next = current + delta;
+      if (next > 30) return;
+      if (next <= 0) delete cart[id];
+      else cart[id] = next;
+      renderProducts();
+    }
+
+    function addDirect(id, amount) {
+      const current = cart[id] || 0;
+      cart[id] = Math.min(30, current + amount);
+      renderProducts();
+    }
+
+    function updateCartBar() {
+      let total = 0;
+      let count = 0;
+      for (const [id, qty] of Object.entries(cart)) {
+        const p = PRODUCTS.find(item => item.id == id);
+        total += p.price * qty;
+        count += qty;
+      }
+      document.getElementById("cart-total-val").innerText = total.toLocaleString() + " so'm";
+      document.getElementById("btn-submit-order").disabled = count === 0;
+    }
+
+    function openCheckout() {
+      document.getElementById("checkout-modal").classList.remove("hidden");
+    }
+
+    function closeCheckout() {
+      document.getElementById("checkout-modal").classList.add("hidden");
+    }
+
+    function getLocation() {
+      if (navigator.geolocation) {
+        document.getElementById("loc-status").innerText = "Aniqlanmoqda...";
+        navigator.geolocation.getCurrentPosition(
+          pos => {
+            clientLocation = { lat: pos.coords.latitude, lon: pos.coords.longitude };
+            document.getElementById("loc-status").innerText = `✅ Manzil olindi (${pos.coords.latitude.toFixed(4)}, ${pos.coords.longitude.toFixed(4)})`;
+          },
+          err => {
+            document.getElementById("loc-status").innerText = "⚠️ Toshkent markazi olindi";
+          }
+        );
+      }
+    }
+
+    function confirmOrder() {
+      const name = document.getElementById("order-name").value.trim();
+      const phone = document.getElementById("order-phone").value.trim();
+      const time = document.getElementById("order-time").value;
+      const payment = document.getElementById("order-payment").value;
+
+      if (!name || !phone) {
+        alert("Iltimos, ismingiz va telefon raqamingizni kiriting!");
+        return;
+      }
+
+      let orderItems = [];
+      let totalSum = 0;
+      for (const [id, qty] of Object.entries(cart)) {
+        const p = PRODUCTS.find(item => item.id == id);
+        orderItems.push({ name: p.name, qty: qty, price: p.price });
+        totalSum += p.price * qty;
+      }
+
+      const newId = orders.length + 1;
+      const initialStatus = payment === "📲 Paynet" ? "To'lov kutilmoqda" : "Yuborildi";
+      const shift = getCurrentShift();
+
+      const newOrder = {
+        id: newId,
+        client: name,
+        phone: phone,
+        items: orderItems,
+        total: totalSum,
+        time: time,
+        payment: payment,
+        status: initialStatus,
+        shift: shift,
+        lat: clientLocation.lat,
+        lon: clientLocation.lon,
+        date: "Hozir"
+      };
+
+      orders.unshift(newOrder);
+
+      if (tg && tg.sendData) {
+        tg.sendData(JSON.stringify(newOrder));
+      }
+
+      cart = {};
+      closeCheckout();
+      renderProducts();
+      renderClientHistory();
+      switchClientTab('history');
+
+      if (payment === "📲 Paynet") {
+        window.open(PAYNET_QR_URL, "_blank");
+        alert(`✅ Buyurtmangiz qabul qilindi (#${newId})!\nPaynet ilovasida to'lovni bajaring va chek rasmini botga yuboring.`);
+      } else {
+        alert(`✅ Buyurtmangiz qabul qilindi (#${newId})! Navbatchi kuryer tez orada yetkazib beradi.`);
+      }
+    }
+
+    function renderClientHistory() {
+      const list = document.getElementById("client-history-list");
+      if (orders.length === 0) {
+        list.innerHTML = `<div style="text-align:center; padding: 30px; color: var(--muted);">Hozircha buyurtmalar yo'q.</div>`;
+        return;
+      }
+      list.innerHTML = "";
+      orders.forEach(o => {
+        let itemsStr = o.items.map(i => `• ${i.name} — ${i.qty} paket`).join("<br>");
+        list.innerHTML += `
+          <div class="card">
+            <div style="display:flex; justify-content:space-between; margin-bottom:5px;">
+              <b>Buyurtma #${o.id}</b>
+              <span class="order-status-tag status-${o.status === "To'lov kutilmoqda" ? 'tolov' : o.status.toLowerCase()}">${o.status}</span>
+            </div>
+            <div style="font-size:0.78rem; color:var(--muted); margin-bottom:3px;">🕒 ${o.date} | ⏰ ${o.time}</div>
+            <div style="font-size:0.8rem; margin-bottom:4px;">💳 To'lov: <b>${o.payment}</b></div>
+            <div style="font-size:0.82rem; margin-bottom:6px;">${itemsStr}</div>
+            <div style="font-weight:700;">Jami: ${o.total.toLocaleString()} so'm</div>
+          </div>
+        `;
+      });
+    }
+
+    function renderCourierOrders(filterType) {
+      const container = document.getElementById("courier-orders-container");
+      container.innerHTML = "";
+      const currentShift = getCurrentShift();
+
+      let list = orders.filter(o => o.shift === currentShift);
+      if (filterType === 'active') {
+        list = list.filter(o => o.status !== 'Topshirildi' && o.status !== 'Bekor qilingan');
+      } else {
+        list = list.filter(o => o.status === 'Topshirildi');
+      }
+
+      if (list.length === 0) {
+        container.innerHTML = `<div style="text-align:center; padding:30px; color:var(--muted);">Smenangizda buyurtmalar yo'q.</div>`;
+        return;
+      }
+
+      list.forEach(o => {
+        let itemsStr = o.items.map(i => `• ${i.name} — ${i.qty} paket`).join("<br>");
+        const yandexNav = `yandexnavi://build_route_on_map?lat_to=${o.lat}&lon_to=${o.lon}`;
+        const googleNav = `https://www.google.com/maps/dir/?api=1&destination=${o.lat},${o.lon}`;
+
+        container.innerHTML += `
+          <div class="card">
+            <div style="display:flex; justify-content:space-between; margin-bottom:4px;">
+              <b>Buyurtma #${o.id}</b>
+              <span class="order-status-tag status-${o.status === "To'lov kutilmoqda" ? 'tolov' : o.status.toLowerCase()}">${o.status}</span>
+            </div>
+            <div style="font-size:0.82rem; font-weight:600;">👤 ${o.client} (<a href="tel:${o.phone}">${o.phone}</a>)</div>
+            <div style="font-size:0.78rem; color:var(--muted); margin-bottom:4px;">⏰ Yetkazish: <b>${o.time}</b> | 💳 ${o.payment}</div>
+            <div style="font-size:0.82rem; margin-bottom:6px;">${itemsStr}</div>
+            <div style="font-weight:700; font-size:0.9rem; margin-bottom:8px;">Jami: ${o.total.toLocaleString()} so'm</div>
+
+            ${o.status !== 'Topshirildi' ? `
+              <div class="order-actions">
+                <a href="${yandexNav}" class="btn-action btn-nav-yandex">🧭 Yandex</a>
+                <a href="${googleNav}" target="_blank" class="btn-action btn-nav-google">🗺 Google</a>
+                <button class="btn-action btn-step" style="background:var(--success);" onclick="courierComplete(${o.id})">✅ Topshirdim</button>
+              </div>
+            ` : ''}
+          </div>
+        `;
+      });
+    }
+
+    function courierComplete(id) {
+      const order = orders.find(o => o.id === id);
+      if (order) {
+        order.status = "Topshirildi";
+        renderCourierOrders('active');
+        calculateMetrics();
+        alert(`✅ Buyurtma #${id} muvaffaqiyatli topshirildi deb belgilandi!`);
+      }
+    }
+
+    function renderAdminView(filterType, customList = null) {
+      const container = document.getElementById("admin-orders-container");
+      container.innerHTML = "";
+
+      let list = customList || orders;
+      if (!customList) {
+        if (filterType === 'active') {
+          list = orders.filter(o => o.status !== 'Topshirildi' && o.status !== 'Bekor qilingan');
+        } else if (filterType === 'pending') {
+          list = orders.filter(o => o.status === "To'lov kutilmoqda");
+        } else if (filterType === 'history') {
+          list = orders;
+        }
+      }
+
+      if (list.length === 0) {
+        container.innerHTML = `<div style="text-align:center; padding:30px; color:var(--muted);">Ushbu bo'limda buyurtma yo'q.</div>`;
+        return;
+      }
+
+      list.forEach(o => {
+        let nextBtn = "";
+        let statusClass = "status-yuborildi";
+
+        if (o.status === "To'lov kutilmoqda") {
+          statusClass = "status-tolov";
+          nextBtn = `<button class="btn-action btn-step" style="background:#16a34a" onclick="updateOrderStatus(${o.id}, 'Yuborildi')">✅ To'lov tushdi (Aktivlash)</button>`;
+        } else if (o.status === "Yuborildi") {
+          statusClass = "status-yuborildi";
+          nextBtn = `<button class="btn-action btn-step" onclick="updateOrderStatus(${o.id}, 'Yig\\'ilmoqda')">📦 Yig'ishni boshlash</button>`;
+        } else if (o.status === "Yig'ilmoqda") {
+          statusClass = "status-yigilmoqda";
+          nextBtn = `<button class="btn-action btn-step" onclick="updateOrderStatus(${o.id}, 'Yo\\'lda')">🚚 Yo'lga chiqarish</button>`;
+        } else if (o.status === "Yo'lda") {
+          statusClass = "status-yolda";
+          nextBtn = `<button class="btn-action btn-step" style="background:#16a34a" onclick="updateOrderStatus(${o.id}, 'Topshirildi')">✅ Topshirildi</button>`;
+        } else if (o.status === "Topshirildi") {
+          statusClass = "status-topshirildi";
+        } else if (o.status === "Bekor qilingan") {
+          statusClass = "status-bekor";
+        }
+
+        const cancelBtn = (o.status !== "Topshirildi" && o.status !== "Bekor qilingan") 
+          ? `<button class="btn-action btn-cancel" onclick="updateOrderStatus(${o.id}, 'Bekor qilingan')">❌ Bekor</button>` 
+          : '';
+
+        let itemsStr = o.items.map(i => `• ${i.name} — ${i.qty} paket`).join("<br>");
+        const smenaStr = o.shift === 1 ? "Kunduzgi (1-kuryer)" : "Tungi (2-kuryer)";
+
+        container.innerHTML += `
+          <div class="card">
+            <div style="display:flex; justify-content:space-between; margin-bottom:4px;">
+              <div><b>#${o.id}</b> — ${o.client}</div>
+              <span class="order-status-tag ${statusClass}">${o.status}</span>
+            </div>
+            <div style="font-size:0.78rem; color:var(--muted); margin-bottom:2px;">📱 ${o.phone} | ⏰ ${o.time}</div>
+            <div style="font-size:0.78rem; color:var(--muted); margin-bottom:4px;">🛵 Smena: <b>${smenaStr}</b> | 💳 ${o.payment}</div>
+            <div style="font-size:0.82rem; margin-bottom:6px;">${itemsStr}</div>
+            <div style="font-weight:700;">Jami: ${o.total.toLocaleString()} so'm</div>
+            ${(nextBtn || cancelBtn) ? `<div class="order-actions">${nextBtn} ${cancelBtn}</div>` : ''}
+          </div>
+        `;
+      });
+    }
+
+    function updateOrderStatus(id, newStatus) {
+      const order = orders.find(o => o.id === id);
+      if (order) {
+        order.status = newStatus;
+        calculateMetrics();
+        renderAdminView('active');
+        if (newStatus === "Bekor qilingan") {
+          alert(`⚠️ Buyurtma #${id} bekor qilindi. Kuryerga va xaridorga xabar berildi.`);
+        }
+      }
+    }
+
+    function calculateMetrics() {
+      const validOrders = orders.filter(o => o.status !== "Bekor qilingan" && o.status !== "To'lov kutilmoqda");
+      const total = validOrders.reduce((sum, o) => sum + o.total, 0);
+
+      document.getElementById("daily-rev").innerText = total.toLocaleString() + " so'm";
+      document.getElementById("monthly-rev").innerText = (total * 26).toLocaleString() + " so'm";
+
+      let counts = {};
+      validOrders.forEach(o => {
+        o.items.forEach(i => {
+          counts[i.name] = (counts[i.name] || 0) + i.qty;
+        });
+      });
+
+      let statsHtml = "";
+      for (const [name, qty] of Object.entries(counts)) {
+        statsHtml += `<div>• ${name}: <b>${qty} paket</b></div>`;
+      }
+      document.getElementById("bread-stats-container").innerHTML = statsHtml || "Hali sotuv yo'q";
+    }
+
+    function searchOrders() {
+      const q = document.getElementById("search-input").value.trim();
+      if (!q) {
+        renderAdminView('active');
+        return;
+      }
+      const matched = orders.filter(o => o.id.toString() === q);
+      renderAdminView(null, matched);
+    }
+
+    function exportToExcel() {
+      let csvContent = "data:text/csv;charset=utf-8,\uFEFF";
+      csvContent += "ID,Mijoz,Telefon,Vaqti,Tolov,Smena,Jami,Holati\n";
+
+      orders.forEach(o => {
+        csvContent += `${o.id},"${o.client}","${o.phone}","${o.time}","${o.payment}",${o.shift === 1 ? 'Kunduz' : 'Tun'},${o.total},"${o.status}"\n`;
+      });
+
+      const encodedUri = encodeURI(csvContent);
+      const link = document.createElement("a");
+      link.setAttribute("href", encodedUri);
+      link.setAttribute("download", `Anvar_Bakery_Hisobot.csv`);
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+    }
+
+    function openBroadcastModal() {
+      document.getElementById("broadcast-modal").classList.remove("hidden");
+    }
+
+    function closeBroadcastModal() {
+      document.getElementById("broadcast-modal").classList.add("hidden");
+    }
+
+    function sendBroadcast() {
+      const msg = document.getElementById("broadcast-text").value.trim();
+      if (!msg) {
+        alert("Iltimos, xabar matnini yozing!");
+        return;
+      }
+      alert(`✅ Xabar muvaffaqiyatli tarqatildi:\n\n"${msg}"`);
+      document.getElementById("broadcast-text").value = "";
+      closeBroadcastModal();
+    }
+
+    function switchClientTab(tab) {
+      document.querySelectorAll('#client-view .nav-tab').forEach((el, idx) => {
+        el.classList.toggle('active', (tab === 'catalog' && idx === 0) || (tab === 'history' && idx === 1) || (tab === 'branches' && idx === 2));
+      });
+      document.getElementById('tab-catalog').classList.toggle('hidden', tab !== 'catalog');
+      document.getElementById('tab-history').classList.toggle('hidden', tab !== 'history');
+      document.getElementById('tab-branches').classList.toggle('hidden', tab !== 'branches');
+    }
+
+    function switchCourierTab(tab) {
+      document.querySelectorAll('#courier-view .nav-tab').forEach((el, idx) => {
+        el.classList.toggle('active', (tab === 'active' && idx === 0) || (tab === 'done' && idx === 1));
+      });
+      renderCourierOrders(tab);
+    }
+
+    function switchAdminTab(tab) {
+      document.querySelectorAll('#admin-view .nav-tab').forEach((el, idx) => {
+        el.classList.toggle('active', (tab === 'active' && idx === 0) || (tab === 'pending' && idx === 1) || (tab === 'history' && idx === 2));
+      });
+      renderAdminView(tab);
+    }
+  </script>
+</body>
+</html>
